@@ -1,4 +1,4 @@
-package Commands;
+package commands;
 
 public interface INTControlledCommand extends INTCommand {
     public enum ControlType{

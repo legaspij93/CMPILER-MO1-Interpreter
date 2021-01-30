@@ -1,6 +1,6 @@
-package SymbolTable;
+package symbolTable;
 
-import Items.TripleJValue;
+import items.TripleJValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;

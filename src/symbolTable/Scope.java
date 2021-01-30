@@ -1,7 +1,7 @@
-package SymbolTable;
+package symbolTable;
 
-import Items.TripleJArray;
-import Items.TripleJValue;
+import items.TripleJArray;
+import items.TripleJValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;

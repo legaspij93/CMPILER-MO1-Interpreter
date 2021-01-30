@@ -1,4 +1,4 @@
-package Commands;
+package commands;
 
 public interface INTConditionalCommand extends INTCommand {
     public abstract INTControlledCommand.ControlType getControlType();
