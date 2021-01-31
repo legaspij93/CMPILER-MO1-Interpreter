@@ -1,13 +1,13 @@
 package adders;
 
 import commands.INTCommand;
-import items.TripleJFunction;
+import items.TripleJMethod;
 
 public class MethodExecutionAdder implements INTExecutionAdder{
 
-    private TripleJFunction assignedFunction;
+    private TripleJMethod assignedFunction;
 
-    public MethodExecutionAdder(TripleJFunction function){
+    public MethodExecutionAdder(TripleJMethod function){
         this.assignedFunction = function;
     }
 
@@ -16,7 +16,7 @@ public class MethodExecutionAdder implements INTExecutionAdder{
 //        this.assignedFunction.addCommand(command);
     }
 
-    public TripleJFunction getAssignedFunction(){
+    public TripleJMethod getAssignedFunction(){
         return this.assignedFunction;
     }
 
