@@ -6,7 +6,7 @@ import interpreter.representations.TripleJValue;
 
 import java.util.HashMap;
 
-public class ClassScope implements INTScope {
+public class ClassScope implements IScope {
     private final static String TAG = "ClassScope";
 
     private String className;

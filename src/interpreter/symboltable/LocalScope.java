@@ -5,19 +5,19 @@ import interpreter.representations.TripleJValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LocalScope implements INTScope {
+public class LocalScope implements IScope {
     private final static String TAG = "LocalScope";
 
-    private INTScope parentScope;
+    private IScope parentScope;
     private ArrayList<LocalScope> childScopeList = null;
 
-    private HashMap<String, TripleJValue> localVariables = null;
+    private HashMap<String, TripleJValue> localVariables = new HashMap<String, TripleJValue>();
 
     public LocalScope() {
         this.parentScope = null;
     }
 
-    public LocalScope(INTScope parentScope) {
+    public LocalScope(IScope parentScope) {
         this.parentScope = parentScope;
     }
 
@@ -39,7 +39,7 @@ public class LocalScope implements INTScope {
         }
     }
 
-    public void setParent(INTScope parentScope) {
+    public void setParent(IScope parentScope) {
         this.parentScope = parentScope;
     }
 
@@ -53,7 +53,7 @@ public class LocalScope implements INTScope {
         return (this.parentScope == null);
     }
 
-    public INTScope getParent() {
+    public IScope getParent() {
         return this.parentScope;
     }
 
@@ -112,24 +112,24 @@ public class LocalScope implements INTScope {
         tripleJValue.setVal(valueString);
     }
 
-    public void addFinalEmptyVariableFromKeywords(String primitiveTypeString, String identifierString) {
-        this.initializeLocalVariableMap();
+//    public void addFinalEmptyVariableFromKeywords(String primitiveTypeString, String identifierString) {
+//        this.initializeLocalVariableMap();
+//
+//        TripleJValue tripleJValue = TripleJValue.createEmptyVariableFromKeywords(primitiveTypeString);
+//        tripleJValue.markFlag();
+//        this.localVariables.put(identifierString, tripleJValue);
+//    }
+//
+//    public void addFinalInitVariableFromKeyWords(String primitiveTypeString, String identifierString, String valueString) {
+//        this.initializeLocalVariableMap();
+//
+//        this.addEmptyVariableFromKeywords(primitiveTypeString, identifierString);
+//        TripleJValue tripleJValue = this.localVariables.get(identifierString);
+//        tripleJValue.setVal(valueString);
+//        tripleJValue.markFlag();
+//    }
 
-        TripleJValue tripleJValue = TripleJValue.createEmptyVariableFromKeywords(primitiveTypeString);
-        tripleJValue.markFlag();
-        this.localVariables.put(identifierString, tripleJValue);
-    }
-
-    public void addFinalInitVariableFromKeyWords(String primitiveTypeString, String identifierString, String valueString) {
-        this.initializeLocalVariableMap();
-
-        this.addEmptyVariableFromKeywords(primitiveTypeString, identifierString);
-        TripleJValue tripleJValue = this.localVariables.get(identifierString);
-        tripleJValue.setVal(valueString);
-        tripleJValue.markFlag();
-    }
-
-    public void addMobiValue(String identifier, TripleJValue tripleJValue) {
+    public void addTripleJValue(String identifier, TripleJValue tripleJValue) {
         this.initializeLocalVariableMap();
         this.localVariables.put(identifier, tripleJValue);
     }
@@ -145,7 +145,7 @@ public class LocalScope implements INTScope {
         while(scope != null) {
             depthCount++;
 
-            INTScope abstractScope = scope.getParent();
+            IScope abstractScope = scope.getParent();
 
             if(abstractScope instanceof ClassScope)
                 break;
