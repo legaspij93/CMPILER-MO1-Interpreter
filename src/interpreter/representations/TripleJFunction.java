@@ -1,5 +1,9 @@
 package interpreter.representations;
 
+import interpreter.execution.ExecutionManager;
+import interpreter.execution.ExecutionMonitor;
+import interpreter.execution.FunctionTracker;
+import interpreter.utils.LocalVarTracker;
 import antlr.TripleJParser;
 import interpreter.commands.INTCommand;
 import interpreter.commands.INTControlledCommand;
@@ -15,7 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TripleJFunction implements INTControlledCommand {
+public class TripleJFunction implements IControlledCommand{
     private final static String TAG = "TripleJFunction";
 
     public enum FunctionType{
@@ -28,7 +32,7 @@ public class TripleJFunction implements INTControlledCommand {
     }
 
     private String funcName;
-    private List<INTCommand> commandList;
+    private List<commands.ICommand> commandList;
 
     private LocalScope parentLocal;
 
@@ -40,7 +44,7 @@ public class TripleJFunction implements INTControlledCommand {
     private boolean hasValidReturns = true;
 
     public TripleJFunction(){
-        this.commandList = new ArrayList<INTCommand>();
+        this.commandList = new ArrayList<commands.ICommand>();
         this.parameterValues = new LinkedHashMap<String, TripleJValue>();
         this.parameterReferences = new LinkedHashMap<String, ClassScope>();
     }
@@ -200,30 +204,30 @@ public class TripleJFunction implements INTControlledCommand {
     }
 
     @Override
-    public void addCommand(INTCommand command) {
-        this.commandSequences.add(command);
+    public void addCommand(commands.ICommand command) {
+        this.commandList.add(command);
         //Console.log("Command added to " +this.functionName);
     }
 
     @Override
     public void execute() {
         ExecutionMonitor executionMonitor = ExecutionManager.getInstance().getExecutionMonitor();
-        MethodTracker.getInstance().reportEnterFunction(this);
+        FunctionTracker.getInstance().reportEnterFunction(this);
 
         LocalVarTracker.getInstance().startNewSession();
 
         try {
-            for(INTCommand command : this.commandSequences) {
-                executionMonitor.tryExecution();
+            for(commands.ICommand command : this.commandList) {
+                executionMonitor.tryExec();
                 command.execute();
 
                 LocalVarTracker.getInstance().populateLocalVars(command);
 
-                if (command instanceof ReturnCommand) {
+                if (command instanceof commands.ReturnCommand) {
                     break;
-                } else if (command instanceof IfCommand) {
-                    if (((IfCommand) command).isReturned()) {
-                        ((IfCommand) command).resetReturnFlag();
+                } else if (command instanceof commands.IfCommand) {
+                    if (((commands.IfCommand) command).isReturned()) {
+                        ((commands.IfCommand) command).resetReturnFlag();
                         break;
                     }
                 }
@@ -235,7 +239,7 @@ public class TripleJFunction implements INTControlledCommand {
             System.out.println(TAG + ": " + "Monitor block interrupted! " +e.getMessage());
         }
 
-        MethodTracker.getInstance().reportExitFunction();
+        FunctionTracker.getInstance().reportExit();
         this.popBackParameters();
         this.popBackLocalVars();
 

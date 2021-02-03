@@ -1,5 +1,5 @@
 package interpreter.commands;
 
-public interface INTCommand {
+public interface ICommand {
     public abstract void execute();
 }

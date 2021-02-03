@@ -1,6 +1,6 @@
 package interpreter.commands;
 
-public interface INTAttemptCommand extends INTCommand {
+public interface IAttemptCommand extends INTCommand {
 
     public enum CatchTypeEnum {
         ARRAY_OUT_OF_BOUNDS,
