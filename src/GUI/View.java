@@ -1,5 +1,11 @@
 package GUI;
 
+import GUI.dialogs.ScanDialogHandler;
+import interpreter.builder.BuildChecker;
+import interpreter.controller.Controller;
+import interpreter.execution.ExecutionManager;
+import interpreter.symboltable.SymbolTableManager;
+import interpreter.utils.LocalVarTracker;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -23,6 +29,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.FileHandler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

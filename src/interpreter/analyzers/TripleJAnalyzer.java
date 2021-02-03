@@ -3,6 +3,7 @@ package interpreter.analyzers;
 import grammar.TripleJLexer;
 import grammar.TripleJParser;
 import interpreter.symboltable.SymbolTableManager;
+import interpreter.symboltable.TripleJScope;
 import interpreter.utils.IdentifiedTokens;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Triple;

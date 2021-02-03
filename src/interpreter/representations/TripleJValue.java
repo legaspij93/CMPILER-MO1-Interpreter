@@ -1,5 +1,7 @@
 package interpreter.representations;
 
+import interpreter.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -14,16 +16,14 @@ public class TripleJValue {
         ARRAY
     }
 
-    private Stack<Object> defaultVal;
-    private Stack<Object> val;
+    private Object defaultVal;
+    private Object val;
     private PrimitiveType primitiveType = PrimitiveType.NOT_YET_IDENTIFIED;
     private boolean flag = false;
 
     public TripleJValue(Object val, PrimitiveType type){
         if(val == null || checkValType(val, type)){
-            this.val = new Stack<Object>();
-
-            this.val.push(val);
+            this.val = val;
             this.primitiveType = type;
         }
         else
@@ -38,17 +38,6 @@ public class TripleJValue {
         this.val = this.defaultVal;
     }
 
-    public Object popBack(){
-        if(this.val.size() > 2)
-            return this.val.pop();
-
-        return null;
-    }
-
-    public int stackSize(){
-        return val.size();
-    }
-
     public void markFlag(){
         this.flag = true;
     }
@@ -59,29 +48,19 @@ public class TripleJValue {
 
     public void setVal(String val){
         if(this.primitiveType == PrimitiveType.NOT_YET_IDENTIFIED)
-            System.out.println("Primitive type not yet defined");
-        else if(this.primitiveType == PrimitiveType.STRING){
-            val.replace("\"", "");
-
-            this.val.push(val.replace("\"", ""));
-        }
+            System.err.println("Primitive type not yet defined");
+        else if(this.primitiveType == PrimitiveType.STRING)
+            this.val = StringUtils.removeQuotes(val);
         else if(this.primitiveType == PrimitiveType.ARRAY)
-            System.out.println(this.primitiveType + "is an array. Cannot directly alter value.");
+            System.err.println(this.primitiveType + " is an array. Cannot directly alter value.");
         else
-            this.val.push(this.attemptTypeCast(val));
+            this.val = this.attemptTypeCast(val);
     }
 
     private Object attemptTypeCast(String val){
         switch (this.primitiveType){
             case INT:
-                String s = val;
-
-                if(s.contains(".")){
-                    String[] split = s.split("[.]");
-                    return Integer.valueOf(split[0]);
-                }
-                else
-                    return Integer.valueOf(val);
+                return Integer.valueOf(val);
             case FLOAT:
                 return Float.valueOf(val);
             case CHAR:
@@ -94,7 +73,7 @@ public class TripleJValue {
     }
 
     public Object getVal(){
-        return this.val.peek();
+        return this.val;
     }
 
     public PrimitiveType getPrimitiveType(){

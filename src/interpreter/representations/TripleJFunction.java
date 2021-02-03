@@ -1,12 +1,14 @@
 package interpreter.representations;
 
+import grammar.TripleJParser;
+import interpreter.commands.ICommand;
+import interpreter.commands.IControlledCommand;
+import interpreter.errorChecker.TypeChecker;
 import interpreter.execution.ExecutionManager;
 import interpreter.execution.ExecutionMonitor;
 import interpreter.execution.FunctionTracker;
+import interpreter.symboltable.TripleJScope;
 import interpreter.utils.LocalVarTracker;
-import antlr.TripleJParser;
-import interpreter.commands.INTCommand;
-import interpreter.commands.INTControlledCommand;
 import interpreter.commands.IfCommand;
 import interpreter.commands.ReturnCommand;
 import interpreter.symboltable.ClassScope;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TripleJFunction implements IControlledCommand{
+public class TripleJFunction implements IControlledCommand {
     private final static String TAG = "TripleJFunction";
 
     public enum FunctionType{
@@ -32,21 +34,21 @@ public class TripleJFunction implements IControlledCommand{
     }
 
     private String funcName;
-    private List<commands.ICommand> commandList;
+    private List<ICommand> commandList;
 
     private LocalScope parentLocal;
 
-    private LinkedHashMap<String, ClassScope> parameterReferences;
+    private LinkedHashMap<String, TripleJScope> parameterReferences;
     private LinkedHashMap<String, TripleJValue> parameterValues;
     private TripleJValue returnVal;
     private FunctionType returnType = FunctionType.VOID;
 
-    private boolean hasValidReturns = true;
+//    private boolean hasValidReturns = true;
 
     public TripleJFunction(){
-        this.commandList = new ArrayList<commands.ICommand>();
+        this.commandList = new ArrayList<ICommand>();
         this.parameterValues = new LinkedHashMap<String, TripleJValue>();
-        this.parameterReferences = new LinkedHashMap<String, ClassScope>();
+        this.parameterReferences = new LinkedHashMap<String, TripleJScope>();
     }
 
     public void setParentLocalScope(LocalScope localScope) {
@@ -61,23 +63,23 @@ public class TripleJFunction implements IControlledCommand{
         this.returnType = type;
 
         switch(this.returnType) {
-            case BOOL: this.returnVal = new TripleJValue(true, TripleJValue.PrimitiveType.BOOL); setValidReturns(false); break;
-            case INT: this.returnVal = new TripleJValue(0, TripleJValue.PrimitiveType.INT); setValidReturns(false); break;
-            case FLOAT: this.returnVal = new TripleJValue(0.0, TripleJValue.PrimitiveType.FLOAT); setValidReturns(false); break;
-            case STRING: this.returnVal = new TripleJValue("", TripleJValue.PrimitiveType.STRING); setValidReturns(false); break;
-            case CHAR: this.returnVal = new TripleJValue(0, TripleJValue.PrimitiveType.CHAR); setValidReturns(false); break;
+            case BOOL: this.returnVal = new TripleJValue(true, TripleJValue.PrimitiveType.BOOL); break;
+            case INT: this.returnVal = new TripleJValue(0, TripleJValue.PrimitiveType.INT); break;
+            case FLOAT: this.returnVal = new TripleJValue(0.0, TripleJValue.PrimitiveType.FLOAT); break;
+            case STRING: this.returnVal = new TripleJValue("", TripleJValue.PrimitiveType.STRING); break;
+            case CHAR: this.returnVal = new TripleJValue(0, TripleJValue.PrimitiveType.CHAR); break;
             default:
                 break;
         }
     }
 
-    public boolean hasValidReturns(){
-        return this.hasValidReturns;
-    }
+//    public boolean hasValidReturns(){
+//        return this.hasValidReturns;
+//    }
 
-    public void setValidReturns(boolean b) {
-        hasValidReturns = b;
-    }
+//    public void setValidReturns(boolean b) {
+//        hasValidReturns = b;
+//    }
 
     public FunctionType getReturnType() {
         return this.returnType;
@@ -112,13 +114,16 @@ public class TripleJFunction implements IControlledCommand{
             return;
         }
 
-        /*BaracoArray baracoArray = (BaracoArray) baracoValue.getValue();
-        BaracoArray newArray = new BaracoArray(baracoArray.getPrimitiveType(), identifier);
-        BaracoValue newValue = new BaracoValue(newArray, PrimitiveType.ARRAY);
-        newArray.initializeSize(baracoArray.getSize());
+        TripleJArray array = (TripleJArray) val.getVal();
+
+        TripleJArray newArray = new TripleJArray(array.getPrimitiveType(), identifier);
+        TripleJValue newValue = new TripleJValue(newArray, TripleJValue.PrimitiveType.ARRAY);
+
+        newArray.initializeSize(array.getSize());
+
         for(int i = 0; i < newArray.getSize(); i++) {
-            newArray.updateValueAt(baracoArray.getValueAt(i), i);
-        }*/
+            newArray.updateValueAt(array.getValueAt(i), i);
+        }
 
         this.parameterValues.put(this.getParameterKeyAt(index), val);
 
@@ -147,7 +152,7 @@ public class TripleJFunction implements IControlledCommand{
 
     public void addParameter(String identifierString, TripleJValue value) {
         this.parameterValues.put(identifierString, value);
-        System.out.println(this.funcName + " added an empty parameter " +identifierString+ " type " + value.getPrimitiveType());
+//        System.out.println(this.funcName + " added an empty parameter " +identifierString+ " type " + value.getPrimitiveType());
     }
 
     public boolean hasParameter(String identifierString) {
@@ -195,7 +200,7 @@ public class TripleJFunction implements IControlledCommand{
 
     public TripleJValue getReturnValue() {
         if(this.returnType == FunctionType.VOID) {
-            System.out.println(this.funcName + " is a void function. Null mobi value is returned");
+            System.out.println(this.funcName + " is a void function. Null value is returned");
             return null;
         }
         else {
@@ -204,7 +209,7 @@ public class TripleJFunction implements IControlledCommand{
     }
 
     @Override
-    public void addCommand(commands.ICommand command) {
+    public void addCommand(ICommand command) {
         this.commandList.add(command);
         //Console.log("Command added to " +this.functionName);
     }
@@ -214,62 +219,16 @@ public class TripleJFunction implements IControlledCommand{
         ExecutionMonitor executionMonitor = ExecutionManager.getInstance().getExecutionMonitor();
         FunctionTracker.getInstance().reportEnterFunction(this);
 
-        LocalVarTracker.getInstance().startNewSession();
-
         try {
-            for(commands.ICommand command : this.commandList) {
+            for(ICommand command : this.commandList) {
                 executionMonitor.tryExec();
                 command.execute();
-
-                LocalVarTracker.getInstance().populateLocalVars(command);
-
-                if (command instanceof commands.ReturnCommand) {
-                    break;
-                } else if (command instanceof commands.IfCommand) {
-                    if (((commands.IfCommand) command).isReturned()) {
-                        ((commands.IfCommand) command).resetReturnFlag();
-                        break;
-                    }
-                }
-
-                if (ExecutionManager.getInstance().isAborted())
-                    break;
             }
         } catch(InterruptedException e) {
-            System.out.println(TAG + ": " + "Monitor block interrupted! " +e.getMessage());
+            System.err.println(TAG + ": " + "Monitor block interrupted! " +e.getMessage());
         }
 
         FunctionTracker.getInstance().reportExit();
-        this.popBackParameters();
-        this.popBackLocalVars();
-
-        LocalVarTracker.getInstance().endCurrentSession();
-
-        //LocalVarTracker.resetLocalVars(localVars);
-    }
-
-    private void popBackParameters() {
-        for (TripleJValue bV : this.parameterValues.values()) {
-            if(bV.getPrimitiveType() != TripleJValue.PrimitiveType.ARRAY)
-                bV.popBack();
-        }
-    }
-
-    private void popBackLocalVars() {
-        for(String s : LocalVarTracker.getInstance().getCurrentSession()) {
-
-            TripleJValue value = VariableSearcher.searchVariableInFunction(this, s);
-
-            if (value != null) {
-
-                if (value.stackSize() > 1) { // prevent from reaching null
-                    if (value.getPrimitiveType() != TripleJValue.PrimitiveType.ARRAY)
-                        value.popBack();
-                }
-
-            }
-
-        }
     }
 
     @Override

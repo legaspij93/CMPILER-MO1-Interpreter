@@ -111,6 +111,6 @@ public class TripleJScope implements IScope{
 
     public void printAllFunctions(){
         for(TripleJFunction function: this.funcs.values())
-            System.out.println(function.getFunctionName());
+            System.out.println(function.getFuncName());
     }
 }

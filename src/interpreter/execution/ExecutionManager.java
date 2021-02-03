@@ -1,5 +1,6 @@
 package interpreter.execution;
 
+import interpreter.commands.ICommand;
 import interpreter.execution.adders.FunctionExecutionAdder;
 import interpreter.execution.adders.IExecutionAdder;
 import interpreter.execution.adders.MainExecutionAdder;
@@ -18,7 +19,7 @@ public class ExecutionManager implements NotificationListener {
         return sharedInstance;
     }
 
-    private ArrayList<commands.ICommand> execList = new ArrayList<commands.ICommand>();
+    private ArrayList<ICommand> execList = new ArrayList<ICommand>();
     private boolean foundEntry = false;
     private String entryName = null;
 
@@ -59,11 +60,11 @@ public class ExecutionManager implements NotificationListener {
         return this.entryName;
     }
 
-    public void addCommand(commands.ICommand command){
+    public void addCommand(ICommand command){
         this.activeExecutionAdder.addCommand(command);
     }
 
-    public void deleteCommand(commands.ICommand command){
+    public void deleteCommand(ICommand command){
         this.execList.remove(command);
     }
 

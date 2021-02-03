@@ -1,6 +1,6 @@
 package interpreter.commands;
 
-public interface IControlledCommand extends INTCommand {
+public interface IControlledCommand extends ICommand {
     public enum ControlTypeEnum{
         CONDITIONAL_IF,
         DO_WHILE,
@@ -10,5 +10,5 @@ public interface IControlledCommand extends INTCommand {
     }
 
     public abstract ControlTypeEnum getControlType();
-    public abstract void addCommand(INTCommand command);
+    public abstract void addCommand(ICommand command);
 }

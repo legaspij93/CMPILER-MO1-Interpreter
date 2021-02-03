@@ -1,5 +1,7 @@
 package interpreter.representations;
 
+import interpreter.execution.ExecutionManager;
+
 public class TripleJArray {
     private final static String TAG = "TripleJArray";
 
@@ -30,15 +32,8 @@ public class TripleJArray {
     }
 
     public void initializeSize(int size) {
-        try {
-            this.tripleJValues = new TripleJValue[size];
-        } catch (NegativeArraySizeException ex) {
-            this.tripleJValues = null;
-
-            //StatementControlOverseer.getInstance().setCurrentCatchClause(IAttemptCommand.CatchTypeEnum.NEGATIVE_ARRAY_SIZE);
-            ExecutionManager.getInstance().setCurrentCatchType(IAttemptCommand.CatchTypeEnum.NEGATIVE_ARRAY_SIZE);
-        }
-        //System.out.println(TAG + ": Mobi array initialized to size " +this.baracoValueArray.length);
+        this.tripleJValues = new TripleJValue[size];
+        System.err.println("Array initialized to size " + this.tripleJValues.length);
     }
 
     public int getSize() {
@@ -46,21 +41,17 @@ public class TripleJArray {
     }
 
     public void updateValueAt(TripleJValue value, int index) {
-        if(index >= this.tripleJValues.length || index <= -1) {
-            //System.out.println("ERROR: " + String.format(ErrorRepository.getErrorMessage(ErrorRepository.RUNTIME_ARRAY_OUT_OF_BOUNDS), this.arrayIdentifier));
-            ExecutionManager.getInstance().setCurrentCatchType(IAttemptCommand.CatchTypeEnum.ARRAY_OUT_OF_BOUNDS);
-
+        if(index >= this.tripleJValues.length) {
+//            ExecutionManager.getInstance().setCurrentCatchType(IAttemptCommand.CatchTypeEnum.ARRAY_OUT_OF_BOUNDS);
             return;
         }
         this.tripleJValues[index] = value;
     }
 
     public TripleJValue getValueAt(int index) {
-        if(index >= this.tripleJValues.length || index <= -1) {
-//            System.out.println("ERROR: " + String.format(ErrorRepository.getErrorMessage(ErrorRepository.RUNTIME_ARRAY_OUT_OF_BOUNDS), this.arrayIdentifier));
-            ExecutionManager.getInstance().setCurrentCatchType(IAttemptCommand.CatchTypeEnum.ARRAY_OUT_OF_BOUNDS);
-
-            return null;
+        if(index >= this.tripleJValues.length) {
+//            ExecutionManager.getInstance().setCurrentCatchType(IAttemptCommand.CatchTypeEnum.ARRAY_OUT_OF_BOUNDS);
+            return this.tripleJValues[this.tripleJValues.length-1];
         }
         else {
             return this.tripleJValues[index];
@@ -68,7 +59,7 @@ public class TripleJArray {
     }
 
     /*
-     * Utility function that returns an arary of specified primitive type.
+     * Utility function that returns an array of specified primitive type.
      */
     public static TripleJArray createArray(String primitiveTypeString, String arrayIdentifier) {
         //identify primitive type

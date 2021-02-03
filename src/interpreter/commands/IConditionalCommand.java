@@ -1,7 +1,7 @@
 package interpreter.commands;
 
-public interface IConditionalCommand extends INTCommand {
-    public abstract INTControlledCommand.ControlType getControlType();
-    public abstract void positiveCommand(INTCommand command);
-    public abstract void negativeCommand(INTCommand command);
+public interface IConditionalCommand extends ICommand {
+    public abstract IControlledCommand.ControlTypeEnum getControlType();
+    public abstract void addPositiveCommand(ICommand command);
+    public abstract void addNegativeCommand(ICommand command);
 }

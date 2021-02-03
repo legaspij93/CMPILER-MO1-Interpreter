@@ -1,29 +1,45 @@
 package interpreter.representations;
 
+import grammar.TripleJParser;
+import interpreter.execution.FunctionTracker;
+import interpreter.symboltable.LocalScopeHandler;
+import interpreter.symboltable.SymbolTableManager;
+import interpreter.symboltable.TripleJScope;
+
 public class TripleJValueSearcher {
-    private final static String TAG = "TripleJValueSearcher";
+    public static TripleJValue searchVariable(String identifierString) {
+        TripleJValue tripleJValue = null;
 
-    public static TripleJValue searchBaracoValue(String identifier) {
-
-        TripleJValue value = null;
-
-        if(MethodTracker.getInstance().isInsideFunction()) {
-            TripleJFunction function = MethodTracker.getInstance().getLatestFunction();
-
-            if(function.hasParameter(identifier)) {
-                value =  function.getParameter(identifier);
-            }
-            else {
-                value = LocalScopeCreator.searchVariableInLocalIterative(identifier, function.getParentLocalScope());
-            }
+        if(FunctionTracker.getInstance().isInsideFunction()) {
+            tripleJValue = searchVariableInFunction(FunctionTracker.getInstance().getLatestFunction(), identifierString);
         }
 
-        if(value == null) {
-            ClassScope classScope = SymbolTableManager.getInstance().getClassScope(ParserHandler.getInstance().getCurrentClassName());
-            value = classScope.searchVariableIncludingLocal(identifier);
+        if(tripleJValue == null) {
+            TripleJScope tripleJScope = SymbolTableManager.getInstance().getCorgiScope();
+            tripleJValue = searchVariableInClassIncludingLocal(tripleJScope, identifierString);
         }
 
-        return value;
+        return tripleJValue;
+    }
 
+    public static TripleJValue searchVariableInFunction(TripleJFunction mobiFunction, String identifierString) {
+        TripleJValue tripleJValue = null;
+
+        if(mobiFunction.hasParameter(identifierString)) {
+            tripleJValue = mobiFunction.getParameter(identifierString);
+        }
+        else {
+            tripleJValue = LocalScopeHandler.searchVariableInLocalIterative(identifierString, mobiFunction.getParentLocalScope());
+        }
+
+        return tripleJValue;
+    }
+
+    public static TripleJValue searchVariableInClassIncludingLocal(TripleJScope tripleJScope, String identifierString) {
+        return tripleJScope.searchVariableIncludingLocal(identifierString);
+    }
+
+    public static TripleJValue searchVariableInClass(TripleJScope tripleJScope, String identifierString) {
+        return tripleJScope.getVariable(identifierString);
     }
 }
