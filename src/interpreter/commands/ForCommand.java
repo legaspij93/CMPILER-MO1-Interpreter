@@ -1,8 +1,10 @@
-package commands;
+package interpreter.commands;
 
 import antlr.TripleJParser;
 import execution.ExecutionManager;
 import execution.ExecutionMonitor;
+import interpreter.mapping.INTValueMapper;
+import interpreter.mapping.IdentifierMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +61,7 @@ public class ForCommand implements INTControlledCommand {
     }
 
     private void identifyVariables() {
-        IValueMapper identifierMapper = new IdentifierMapper(this.conditionalExpr.getText());
+        INTValueMapper identifierMapper = new IdentifierMapper(this.conditionalExpr.getText());
         identifierMapper.analyze(this.conditionalExpr);
 
         this.modifiedConditionExpr = identifierMapper.getModifiedExp();

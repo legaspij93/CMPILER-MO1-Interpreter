@@ -1,5 +1,13 @@
 package interpreter.representations;
 
+import antlr.TripleJParser;
+import interpreter.commands.INTCommand;
+import interpreter.commands.INTControlledCommand;
+import interpreter.commands.IfCommand;
+import interpreter.commands.ReturnCommand;
+import interpreter.symboltable.ClassScope;
+import interpreter.symboltable.LocalScope;
+import interpreter.utils.LocalVarTracker;
 import org.antlr.v4.runtime.misc.Triple;
 
 import java.lang.invoke.MethodType;
@@ -7,7 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TripleJFunction implements IControlledCommand{
+public class TripleJFunction implements INTControlledCommand {
     private final static String TAG = "TripleJFunction";
 
     public enum FunctionType{
@@ -20,7 +28,7 @@ public class TripleJFunction implements IControlledCommand{
     }
 
     private String funcName;
-    private List<ICommand> commandList;
+    private List<INTCommand> commandList;
 
     private LocalScope parentLocal;
 
@@ -32,17 +40,17 @@ public class TripleJFunction implements IControlledCommand{
     private boolean hasValidReturns = true;
 
     public TripleJFunction(){
-        this.commandList = new ArrayList<ICommand>();
+        this.commandList = new ArrayList<INTCommand>();
         this.parameterValues = new LinkedHashMap<String, TripleJValue>();
         this.parameterReferences = new LinkedHashMap<String, ClassScope>();
     }
 
     public void setParentLocalScope(LocalScope localScope) {
-        this.parentLocalScope = localScope;
+        this.parentLocal = localScope;
     }
 
     public LocalScope getParentLocalScope() {
-        return this.parentLocalScope;
+        return this.parentLocal;
     }
 
     public void setReturnType(FunctionType type) {
@@ -82,7 +90,7 @@ public class TripleJFunction implements IControlledCommand{
     public void mapParameterByValue(String... values) {
         for(int i = 0; i < values.length; i++) {
             TripleJValue val = this.getParameterAt(i);
-            val.setValue(values[i]);
+            val.setVal(values[i]);
         }
     }
 
@@ -92,7 +100,7 @@ public class TripleJFunction implements IControlledCommand{
         }
 
         TripleJValue val = this.getParameterAt(index);
-        val.setValue(value);
+        val.setVal(value);
     }
 
     public void mapArrayAt(TripleJValue val, int index, String identifier) {
@@ -116,7 +124,7 @@ public class TripleJFunction implements IControlledCommand{
         return this.parameterValues.size();
     }
 
-    public void verifyParameterByValueAt(ExpressionContext exprCtx, int index) {
+    public void verifyParameterByValueAt(TripleJParser.ExpressionContext exprCtx, int index) {
         if(index >= this.parameterValues.size()) {
             return;
         }
@@ -192,7 +200,7 @@ public class TripleJFunction implements IControlledCommand{
     }
 
     @Override
-    public void addCommand(ICommand command) {
+    public void addCommand(INTCommand command) {
         this.commandSequences.add(command);
         //Console.log("Command added to " +this.functionName);
     }
@@ -205,7 +213,7 @@ public class TripleJFunction implements IControlledCommand{
         LocalVarTracker.getInstance().startNewSession();
 
         try {
-            for(ICommand command : this.commandSequences) {
+            for(INTCommand command : this.commandSequences) {
                 executionMonitor.tryExecution();
                 command.execute();
 

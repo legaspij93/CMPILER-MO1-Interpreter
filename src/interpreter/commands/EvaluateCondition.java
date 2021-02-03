@@ -1,4 +1,4 @@
-package commands;
+package interpreter.commands;
 
 import antlr.TripleJParser;
 import com.udojava.evalex.Expression;

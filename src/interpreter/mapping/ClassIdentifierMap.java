@@ -1,6 +1,8 @@
 package interpreter.mapping;
 
 import interpreter.representations.TripleJValue;
+import interpreter.symboltable.ClassScope;
+import interpreter.symboltable.SymbolTableManager;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -71,7 +73,7 @@ public class ClassIdentifierMap implements ParseTreeListener, INTValueMapper {
     }
 
     @Override
-    public TripleJValue getBaracoValue() {
+    public TripleJValue getValue() {
         return this.baracoValue;
     }
 

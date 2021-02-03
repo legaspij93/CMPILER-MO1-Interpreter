@@ -1,8 +1,10 @@
-package commands;
+package interpreter.commands;
 
 import antlr.TripleJParser;
 import execution.ExecutionManager;
+import interpreter.representations.TripleJArray;
 import items.TripleJArray;
+import org.antlr.v4.runtime.Token;
 
 public class ArrayInitializeCommand implements INTCommand {
 

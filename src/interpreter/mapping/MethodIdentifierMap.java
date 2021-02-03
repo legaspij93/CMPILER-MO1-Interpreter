@@ -1,9 +1,14 @@
 package interpreter.mapping;
 
+import interpreter.commands.EvaluationCommand;
 import interpreter.representations.TripleJArray;
 import interpreter.representations.TripleJFunction;
 import interpreter.representations.TripleJValue;
 import interpreter.representations.TripleJValueSearcher;
+import interpreter.symboltable.ClassScope;
+import interpreter.symboltable.LocalScope;
+import interpreter.symboltable.LocalScopeCreate;
+import interpreter.symboltable.SymbolTableManager;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -85,17 +90,17 @@ public class MethodIdentifierMap implements ParseTreeListener, INTValueMapper {
             this.modifiedExp = this.modifiedExp.replace(identifierString, this.assignedFunction.getParameter(identifierString).getValue().toString());
         }
         else {
-            this.tripleJValue = LocalScopeCreator.searchVariableInLocalIterative(identifierString, this.functionLocalScope);
+            this.tripleJValue = LocalScopeCreate.searchVariableInLocalIterative(identifierString, this.functionLocalScope);
 
             if(this.tripleJValue != null) {
-                this.modifiedExp = this.modifiedExp.replace(identifierString, this.tripleJValue.getValue().toString());
+                this.modifiedExp = this.modifiedExp.replace(identifierString, this.tripleJValue.getVal().toString());
             }
             else {
                 ClassScope classScope = SymbolTableManager.getInstance().getClassScope(ParserHandler.getInstance().getCurrentClassName());
                 this.tripleJValue = classScope.searchVariableIncludingLocal(identifierString);
 
                 //Console.log("Variable in global scope: " +this.mobiValue.getValue());
-                this.modifiedExp = this.modifiedExp.replace(identifierString, this.tripleJValue.getValue().toString());
+                this.modifiedExp = this.modifiedExp.replace(identifierString, this.tripleJValue.getVal().toString());
             }
         }
     }
@@ -106,7 +111,7 @@ public class MethodIdentifierMap implements ParseTreeListener, INTValueMapper {
         if (value != null) {
             if (value.getPrimitiveType() == TripleJValue.PrimitiveType.ARRAY) {
 
-                TripleJArray tripleJArray = (TripleJArray) value.getValue();
+                TripleJArray tripleJArray = (TripleJArray) value.getVal();
 
                 EvaluationCommand evCmd = new EvaluationCommand(exprCtx.expression(1));
                 evCmd.execute();
@@ -118,7 +123,7 @@ public class MethodIdentifierMap implements ParseTreeListener, INTValueMapper {
                     return;
 
                 if (tripleJValue.getPrimitiveType() == TripleJValue.PrimitiveType.STRING) {
-                    this.modifiedExp = this.modifiedExp.replace(exprCtx.getText(), "\"" + tripleJValue.getValue().toString() + "\"");
+                    this.modifiedExp = this.modifiedExp.replace(exprCtx.getText(), "\"" + tripleJValue.getVal().toString() + "\"");
                 } else {
                     this.modifiedExp = this.modifiedExp.replace(exprCtx.expression(0).getText() + "[" + evCmd.getResult().intValue() + "]", tripleJValue.getValue().toString());
                 }
@@ -129,7 +134,7 @@ public class MethodIdentifierMap implements ParseTreeListener, INTValueMapper {
     }
 
     @Override
-    public TripleJValue getBaracoValue() {
+    public TripleJValue getValue() {
         return this.tripleJValue;
     }
 

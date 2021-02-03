@@ -37,7 +37,7 @@ public class IdentifierMapper implements INTValueMapper{
     }
 
     @Override
-    public TripleJValue getBaracoValue() {
-        return this.valueMapper.getBaracoValue();
+    public TripleJValue getValue() {
+        return this.valueMapper.getValue();
     }
 }

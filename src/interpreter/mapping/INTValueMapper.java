@@ -7,5 +7,5 @@ public interface INTValueMapper {
     public abstract void analyze(TripleJParser.ParExpressionContext exprCtx);
     public abstract String getOriginalExp();
     public abstract String getModifiedExp();
-    public abstract TripleJValue getBaracoValue();
+    public abstract TripleJValue getValue();
 }

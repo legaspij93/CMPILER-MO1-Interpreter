@@ -1,7 +1,10 @@
-package commands;
+package interpreter.commands;
 
 import antlr.TripleJLexer;
 import antlr.TripleJParser;
+import interpreter.mapping.INTValueMapper;
+import interpreter.mapping.IdentifierMapper;
+import interpreter.representations.TripleJValue;
 import items.TripleJValue;
 
 public class IncDecCommand implements INTCommand {
@@ -24,7 +27,7 @@ public class IncDecCommand implements INTCommand {
     public void execute() {
 
 
-        IValueMapper leftHandMapper = new IdentifierMapper(
+        INTValueMapper leftHandMapper = new IdentifierMapper(
                 this.exprCtx.getText());
         leftHandMapper.analyze(this.exprCtx);
 
@@ -39,27 +42,27 @@ public class IncDecCommand implements INTCommand {
      */
     private void performOperation(TripleJValue tripleJValue) {
         if(tripleJValue.getPrimitiveType() == TripleJValue.PrimitiveType.INT) {
-            int value = Integer.parseInt(tripleJValue.getValue().toString());
+            int value = Integer.parseInt(tripleJValue.getVal().toString());
 
             if(this.tokenSign == TripleJLexer.INC) {
                 value++;
-                tripleJValue.setValue(String.valueOf(value));
+                tripleJValue.setVal(String.valueOf(value));
             }
             else if(this.tokenSign == TripleJLexer.DEC) {
                 value--;
-                tripleJValue.setValue(String.valueOf(value));
+                tripleJValue.setVal(String.valueOf(value));
             }
         }
         else if(tripleJValue.getPrimitiveType() == TripleJValue.PrimitiveType.FLOAT) {
-            float value = Float.parseFloat(tripleJValue.getValue().toString());
+            float value = Float.parseFloat(tripleJValue.getVal().toString());
 
             if(this.tokenSign == TripleJLexer.INC) {
                 value++;
-                tripleJValue.setValue(String.valueOf(value));
+                tripleJValue.setVal(String.valueOf(value));
             }
             else if(this.tokenSign == TripleJLexer.DEC) {
                 value--;
-                tripleJValue.setValue(String.valueOf(value));
+                tripleJValue.setVal(String.valueOf(value));
             }
         }
     }

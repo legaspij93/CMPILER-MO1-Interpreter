@@ -1,7 +1,11 @@
-package commands;
+package interpreter.commands;
 
 import antlr.TripleJParser;
+import interpreter.representations.TripleJValue;
+import interpreter.utils.AssignmentUtils;
+import interpreter.utils.StringUtils;
 import items.TripleJValue;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class MappingCommand implements INTCommand{
 
@@ -31,26 +35,31 @@ public class MappingCommand implements INTCommand{
         EvaluationCommand evaluationCommand;
         TripleJValue tripleJValue = VariableSearcher.searchVariable(this.identifierString);
         if(this.modifiedExp.contains("\"")) {
-            value = StringUtilities.removeQuotes(this.modifiedExp);
+            value = StringUtils.removeQuotes(this.modifiedExp);
             tripleJValue.setPrimitiveType(TripleJValue.PrimitiveType.STRING);
-            tripleJValue.setValue(value);
+            tripleJValue.setVal(value);
         }else if(this.modifiedExp.contains("'")){
-            value = StringUtilities.removeQuotes(this.modifiedExp);
+            value = StringUtils.removeQuotes(this.modifiedExp);
             tripleJValue.setPrimitiveType(TripleJValue.PrimitiveType.CHAR);
-            tripleJValue.setValue(value);
+            tripleJValue.setVal(value);
         }
         else {
             evaluationCommand = new EvaluationCommand(this.parentExprCtx);
             evaluationCommand.execute();
-            AssignmentUtilities.assignAppropriateValue(tripleJValue, evaluationCommand.getResult());
+            AssignmentUtils.assignAppropriateValue(tripleJValue, evaluationCommand.getResult());
         }
 
     }
 
-    /*
-     * Returns the modified exp, with mapped values.
-     */
     public String getModifiedExp() {
         return this.modifiedExp;
+    }
+
+    public String getIdentifierString() {
+        return identifierString;
+    }
+
+    public TripleJParser.ExpressionContext getParentExprCtx() {
+        return parentExprCtx;
     }
 }

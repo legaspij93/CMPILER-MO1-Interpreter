@@ -1,5 +1,10 @@
 package interpreter.utils;
 
+import interpreter.commands.AssignmentCommand;
+import interpreter.commands.INTCommand;
+import interpreter.commands.IncDecCommand;
+import interpreter.commands.MappingCommand;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -25,7 +30,7 @@ public class LocalVarTracker {
         sessions = new Stack<ArrayList<String>>();
     }
 
-    public void populateLocalVars(ICommand command) {
+    public void populateLocalVars(INTCommand command) {
 
         if (!sessions.isEmpty()) {
 

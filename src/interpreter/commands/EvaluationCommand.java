@@ -1,13 +1,14 @@
-package commands;
+package interpreter.commands;
 
 import antlr.TripleJParser;
 import com.udojava.evalex.Expression;
+import interpreter.utils.StringUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import utils.StringUtils;
+import interpreter.utils.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;

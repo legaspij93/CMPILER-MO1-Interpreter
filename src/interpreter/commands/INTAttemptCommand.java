@@ -1,4 +1,4 @@
-package commands;
+package interpreter.commands;
 
 public interface INTAttemptCommand extends INTCommand {
 
