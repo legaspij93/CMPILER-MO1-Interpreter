@@ -16,8 +16,19 @@ public class ExecutionManager implements NotificationListener {
         return sharedInstance;
     }
 
+    private INTExecutionAdder activeExecutionAdder;
+    private ExecutionMonitor executionMonitor;
+
     @Override
     public void handleNotification(Notification notification, Object handback){
 
+    }
+
+    public ExecutionMonitor getExecutionMonitor() {
+        return this.executionMonitor;
+    }
+
+    public void addCommand(INTCommand command){
+        this.activeExecutionAdder.addCommand(command);
     }
 }

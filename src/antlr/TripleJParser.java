@@ -10306,4 +10306,535 @@ public class TripleJParser extends Parser {
 			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
 		}
 	}
+
+	public static class LocalVariableDeclarationContext extends ParserRuleContext {
+		public TypeTypeContext typeType() {
+			return getRuleContext(TypeTypeContext.class,0);
+		}
+		public VariableDeclaratorsContext variableDeclarators() {
+			return getRuleContext(VariableDeclaratorsContext.class,0);
+		}
+		public List<VariableModifierContext> variableModifier() {
+			return getRuleContexts(VariableModifierContext.class);
+		}
+		public VariableModifierContext variableModifier(int i) {
+			return getRuleContext(VariableModifierContext.class,i);
+		}
+		public LocalVariableDeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_localVariableDeclaration; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof BaracoListener ) ((BaracoListener)listener).enterLocalVariableDeclaration(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof BaracoListener ) ((BaracoListener)listener).exitLocalVariableDeclaration(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof BaracoVisitor ) return ((BaracoVisitor<? extends T>)visitor).visitLocalVariableDeclaration(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final LocalVariableDeclarationContext localVariableDeclaration() throws RecognitionException {
+		LocalVariableDeclarationContext _localctx = new LocalVariableDeclarationContext(_ctx, getState());
+		enterRule(_localctx, 140, RULE_localVariableDeclaration);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+				setState(813);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==FINAL || _la==AT) {
+					{
+						{
+							setState(810);
+							variableModifier();
+						}
+					}
+					setState(815);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				setState(816);
+				typeType();
+				setState(817);
+				variableDeclarators();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class StatementContext extends ParserRuleContext {
+		public BlockContext block() {
+			return getRuleContext(BlockContext.class,0);
+		}
+		public TerminalNode ASSERT() { return getToken(BaracoParser.ASSERT, 0); }
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public ParExpressionContext parExpression() {
+			return getRuleContext(ParExpressionContext.class,0);
+		}
+		public List<StatementContext> statement() {
+			return getRuleContexts(StatementContext.class);
+		}
+		public StatementContext statement(int i) {
+			return getRuleContext(StatementContext.class,i);
+		}
+		public ForControlContext forControl() {
+			return getRuleContext(ForControlContext.class,0);
+		}
+		public FinallyBlockContext finallyBlock() {
+			return getRuleContext(FinallyBlockContext.class,0);
+		}
+		public List<CatchClauseContext> catchClause() {
+			return getRuleContexts(CatchClauseContext.class);
+		}
+		public CatchClauseContext catchClause(int i) {
+			return getRuleContext(CatchClauseContext.class,i);
+		}
+		public ResourceSpecificationContext resourceSpecification() {
+			return getRuleContext(ResourceSpecificationContext.class,0);
+		}
+		public List<SwitchBlockStatementGroupContext> switchBlockStatementGroup() {
+			return getRuleContexts(SwitchBlockStatementGroupContext.class);
+		}
+		public SwitchBlockStatementGroupContext switchBlockStatementGroup(int i) {
+			return getRuleContext(SwitchBlockStatementGroupContext.class,i);
+		}
+		public List<SwitchLabelContext> switchLabel() {
+			return getRuleContexts(SwitchLabelContext.class);
+		}
+		public SwitchLabelContext switchLabel(int i) {
+			return getRuleContext(SwitchLabelContext.class,i);
+		}
+		public TerminalNode Identifier() { return getToken(BaracoParser.Identifier, 0); }
+		public StatementExpressionContext statementExpression() {
+			return getRuleContext(StatementExpressionContext.class,0);
+		}
+		public TerminalNode PRINT() { return getToken(BaracoParser.PRINT, 0); }
+		public TerminalNode PRINTLN() { return getToken(BaracoParser.PRINTLN, 0); }
+		public ScanStatementContext scanStatement() {
+			return getRuleContext(ScanStatementContext.class,0);
+		}
+		public StatementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_statement; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof BaracoListener ) ((BaracoListener)listener).enterStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof BaracoListener ) ((BaracoListener)listener).exitStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof BaracoVisitor ) return ((BaracoVisitor<? extends T>)visitor).visitStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final StatementContext statement() throws RecognitionException {
+		StatementContext _localctx = new StatementContext(_ctx, getState());
+		enterRule(_localctx, 142, RULE_statement);
+		int _la;
+		try {
+			int _alt;
+			setState(936);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,104,_ctx) ) {
+				case 1:
+					enterOuterAlt(_localctx, 1);
+				{
+					setState(819);
+					block();
+				}
+				break;
+				case 2:
+					enterOuterAlt(_localctx, 2);
+				{
+					setState(820);
+					match(ASSERT);
+					setState(821);
+					expression(0);
+					setState(824);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if (_la==COLON) {
+						{
+							setState(822);
+							match(COLON);
+							setState(823);
+							expression(0);
+						}
+					}
+
+					setState(826);
+					match(SEMI);
+				}
+				break;
+				case 3:
+					enterOuterAlt(_localctx, 3);
+				{
+					setState(828);
+					match(IF);
+					setState(829);
+					parExpression();
+					setState(830);
+					statement();
+					setState(833);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,93,_ctx) ) {
+						case 1:
+						{
+							setState(831);
+							match(ELSE);
+							setState(832);
+							statement();
+						}
+						break;
+					}
+				}
+				break;
+				case 4:
+					enterOuterAlt(_localctx, 4);
+				{
+					setState(835);
+					match(FOR);
+					setState(836);
+					match(LPAREN);
+					setState(837);
+					forControl();
+					setState(838);
+					match(RPAREN);
+					setState(839);
+					statement();
+				}
+				break;
+				case 5:
+					enterOuterAlt(_localctx, 5);
+				{
+					setState(841);
+					match(WHILE);
+					setState(842);
+					parExpression();
+					setState(843);
+					statement();
+				}
+				break;
+				case 6:
+					enterOuterAlt(_localctx, 6);
+				{
+					setState(845);
+					match(DO);
+					setState(846);
+					statement();
+					setState(847);
+					match(WHILE);
+					setState(848);
+					parExpression();
+					setState(849);
+					match(SEMI);
+				}
+				break;
+				case 7:
+					enterOuterAlt(_localctx, 7);
+				{
+					setState(851);
+					match(TRY);
+					setState(852);
+					block();
+					setState(862);
+					_errHandler.sync(this);
+					switch (_input.LA(1)) {
+						case CATCH:
+						{
+							setState(854);
+							_errHandler.sync(this);
+							_la = _input.LA(1);
+							do {
+								{
+									{
+										setState(853);
+										catchClause();
+									}
+								}
+								setState(856);
+								_errHandler.sync(this);
+								_la = _input.LA(1);
+							} while ( _la==CATCH );
+							setState(859);
+							_errHandler.sync(this);
+							_la = _input.LA(1);
+							if (_la==FINALLY) {
+								{
+									setState(858);
+									finallyBlock();
+								}
+							}
+
+						}
+						break;
+						case FINALLY:
+						{
+							setState(861);
+							finallyBlock();
+						}
+						break;
+						default:
+							throw new NoViableAltException(this);
+					}
+				}
+				break;
+				case 8:
+					enterOuterAlt(_localctx, 8);
+				{
+					setState(864);
+					match(TRY);
+					setState(865);
+					resourceSpecification();
+					setState(866);
+					block();
+					setState(870);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					while (_la==CATCH) {
+						{
+							{
+								setState(867);
+								catchClause();
+							}
+						}
+						setState(872);
+						_errHandler.sync(this);
+						_la = _input.LA(1);
+					}
+					setState(874);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if (_la==FINALLY) {
+						{
+							setState(873);
+							finallyBlock();
+						}
+					}
+
+				}
+				break;
+				case 9:
+					enterOuterAlt(_localctx, 9);
+				{
+					setState(876);
+					match(SWITCH);
+					setState(877);
+					parExpression();
+					setState(878);
+					match(LBRACE);
+					setState(882);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,99,_ctx);
+					while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+						if ( _alt==1 ) {
+							{
+								{
+									setState(879);
+									switchBlockStatementGroup();
+								}
+							}
+						}
+						setState(884);
+						_errHandler.sync(this);
+						_alt = getInterpreter().adaptivePredict(_input,99,_ctx);
+					}
+					setState(888);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					while (_la==CASE || _la==DEFAULT) {
+						{
+							{
+								setState(885);
+								switchLabel();
+							}
+						}
+						setState(890);
+						_errHandler.sync(this);
+						_la = _input.LA(1);
+					}
+					setState(891);
+					match(RBRACE);
+				}
+				break;
+				case 10:
+					enterOuterAlt(_localctx, 10);
+				{
+					setState(893);
+					match(SYNCHRONIZED);
+					setState(894);
+					parExpression();
+					setState(895);
+					block();
+				}
+				break;
+				case 11:
+					enterOuterAlt(_localctx, 11);
+				{
+					setState(897);
+					match(RETURN);
+					setState(899);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NEW) | (1L << SUPER) | (1L << THIS) | (1L << IntegerLiteral) | (1L << FloatingPointLiteral) | (1L << BooleanLiteral))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (CharacterLiteral - 64)) | (1L << (StringLiteral - 64)) | (1L << (NullLiteral - 64)) | (1L << (LPAREN - 64)) | (1L << (LT - 64)) | (1L << (BANG - 64)) | (1L << (TILDE - 64)) | (1L << (INC - 64)) | (1L << (DEC - 64)) | (1L << (ADD - 64)) | (1L << (SUB - 64)) | (1L << (Identifier - 64)))) != 0)) {
+						{
+							setState(898);
+							expression(0);
+						}
+					}
+
+					setState(901);
+					match(SEMI);
+				}
+				break;
+				case 12:
+					enterOuterAlt(_localctx, 12);
+				{
+					setState(902);
+					match(THROW);
+					setState(903);
+					expression(0);
+					setState(904);
+					match(SEMI);
+				}
+				break;
+				case 13:
+					enterOuterAlt(_localctx, 13);
+				{
+					setState(906);
+					match(BREAK);
+					setState(908);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if (_la==Identifier) {
+						{
+							setState(907);
+							match(Identifier);
+						}
+					}
+
+					setState(910);
+					match(SEMI);
+				}
+				break;
+				case 14:
+					enterOuterAlt(_localctx, 14);
+				{
+					setState(911);
+					match(CONTINUE);
+					setState(913);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+					if (_la==Identifier) {
+						{
+							setState(912);
+							match(Identifier);
+						}
+					}
+
+					setState(915);
+					match(SEMI);
+				}
+				break;
+				case 15:
+					enterOuterAlt(_localctx, 15);
+				{
+					setState(916);
+					match(SEMI);
+				}
+				break;
+				case 16:
+					enterOuterAlt(_localctx, 16);
+				{
+					setState(917);
+					statementExpression();
+					setState(918);
+					match(SEMI);
+				}
+				break;
+				case 17:
+					enterOuterAlt(_localctx, 17);
+				{
+					setState(920);
+					match(Identifier);
+					setState(921);
+					match(COLON);
+					setState(922);
+					statement();
+				}
+				break;
+				case 18:
+					enterOuterAlt(_localctx, 18);
+				{
+					setState(923);
+					match(PRINT);
+					setState(924);
+					match(LPAREN);
+					setState(925);
+					expression(0);
+					setState(926);
+					match(RPAREN);
+					setState(927);
+					match(SEMI);
+				}
+				break;
+				case 19:
+					enterOuterAlt(_localctx, 19);
+				{
+					setState(929);
+					match(PRINTLN);
+					setState(930);
+					match(LPAREN);
+					setState(931);
+					expression(0);
+					setState(932);
+					match(RPAREN);
+					setState(933);
+					match(SEMI);
+				}
+				break;
+				case 20:
+					enterOuterAlt(_localctx, 20);
+				{
+					setState(935);
+					scanStatement();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
 }
