@@ -3,6 +3,9 @@ package commands;
 import antlr.TripleJLexer;
 import antlr.TripleJParser;
 import execution.ExecutionManager;
+import interpreter.commands.EvaluationCommand;
+import interpreter.errorChecker.TypeChecker;
+import interpreter.representations.TripleJValue;
 import items.TripleJArray;
 import items.TripleJValue;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -33,7 +36,6 @@ public class AssignmentCommand implements INTCommand {
         ParseTreeWalker functionWalker = new ParseTreeWalker();
         functionWalker.walk(new MethodCallVerifier(), this.rightHandExprCtx);
 
-        //type check the mobivalue
         TripleJValue tripleJValue;
         if(ExecutionManager.getInstance().isInFunctionExecution()) {
             tripleJValue = VariableSearcher.searchVariableInFunction(ExecutionManager.getInstance().getCurrentFunction(), this.leftHandExprCtx.getText());
@@ -42,7 +44,7 @@ public class AssignmentCommand implements INTCommand {
             tripleJValue = VariableSearcher.searchVariable(this.leftHandExprCtx.getText());
         }
 
-        TypeChecker typeChecker = new TypeChecker(baracoValue, this.rightHandExprCtx);
+        TypeChecker typeChecker = new TypeChecker(tripleJValue, this.rightHandExprCtx);
         typeChecker.verify();
     }
 
@@ -51,32 +53,20 @@ public class AssignmentCommand implements INTCommand {
         EvaluationCommand evaluationCommand = new EvaluationCommand(this.rightHandExprCtx);
         evaluationCommand.execute();
 
-        if(evaluationCommand.hasException())
-            return;
-
         if(this.isLeftHandArrayAccessor()) {
-
-            if(evaluationCommand.isNumericResult())
-                this.handleArrayAssignment(evaluationCommand.getResult().toEngineeringString());
-            else
-                this.handleArrayAssignment(evaluationCommand.getStringResult());
+            this.handleArrayAssignment(evaluationCommand.getResult().toEngineeringString());
         }
         else {
             TripleJValue tripleJValue = VariableSearcher.searchVariable(this.leftHandExprCtx.getText());
-
-            if (evaluationCommand.isNumericResult()) {
-
-                if (!tripleJValue.isFinal()) {
-                    AssignmentUtils.assignAppropriateValue(tripleJValue, evaluationCommand.getResult());
-                }
-
-            } else {
-
-                if (!tripleJValue.isFinal()) {
-                    AssignmentUtils.assignAppropriateValue(tripleJValue, evaluationCommand.getStringResult());
-                }
-            }
+            AssignmentUtilities.assignAppropriateValue(tripleJValue, evaluationCommand.getResult());
         }
+    }
+
+    private boolean isLeftHandArrayAccessor() {
+        List<TerminalNode> lBrackTokens = this.leftHandExprCtx.getTokens(CorgiLexer.LBRACK);
+        List<TerminalNode> rBrackTokens = this.leftHandExprCtx.getTokens(CorgiLexer.RBRACK);
+
+        return(lBrackTokens.size() > 0 && rBrackTokens.size() > 0);
     }
 
     public boolean isLeftHandArrayAccessor() {
@@ -106,11 +96,4 @@ public class AssignmentCommand implements INTCommand {
         //Console.log("Index to access: " +evaluationCommand.getResult().intValue()+ " Updated with: " +resultString);
     }
 
-    public TripleJParser.ExpressionContext getLeftHandExprCtx() {
-        return leftHandExprCtx;
-    }
-
-    public TripleJParser.ExpressionContext getRightHandExprCtx() {
-        return rightHandExprCtx;
-    }
 }

@@ -15,14 +15,6 @@ public class ArrayInitializeCommand implements INTCommand {
         this.assignedTripleJArray = tripleJArray;
         this.arrayCreatorCtx = arrayCreatorCtx;
 
-        if (arrayCreatorCtx.expression(0) != null) {
-            if (arrayCreatorCtx.expression(0).getText().contains("\"") || arrayCreatorCtx.expression(0).getText().contains(".")) {
-                Token firstToken = this.arrayCreatorCtx.getStart();
-                int lineNumber = firstToken.getLine();
-
-                BuildChecker.reportCustomError(ErrorRepository.INVALID_INDEX_ASSIGN, "", lineNumber);
-            }
-        }
     }
 
     @Override
@@ -33,9 +25,23 @@ public class ArrayInitializeCommand implements INTCommand {
             EvaluationCommand evaluationCommand = new EvaluationCommand(exprCtx);
             evaluationCommand.execute();
 
-            ExecutionManager.getInstance().setCurrentCheckedLineNumber(exprCtx.getStart().getLine());
-            this.assignedTripleJArray.initializeSize(evaluationCommand.getResult().intValue());
+            if (isInteger(evaluationCommand.getResult().toString()))
+                this.assignedTripleJArray.initializeSize(evaluationCommand.getResult().intValue());
+            else{
+                Token token = arrayCreatorCtx.expression(0).getStart();
+                BuildChecker.reportCustomError(SemanticErrorDictionary.TYPE_MISMATCH,"Array Size should be integer." , token.getLine());
+            }
         }
 
+    }
+
+    public boolean isInteger( String input ) {
+        try {
+            Integer.parseInt( input );
+            return true;
+        }
+        catch( Exception e ) {
+            return false;
+        }
     }
 }

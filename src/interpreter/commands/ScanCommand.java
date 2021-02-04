@@ -2,6 +2,9 @@ package interpreter.commands;
 
 import antlr.TripleJParser;
 import execution.ExecutionManager;
+import interpreter.representations.TripleJValue;
+import interpreter.representations.TripleJValueSearcher;
+import interpreter.utils.KeyNames;
 import items.TripleJArray;
 import items.TripleJValue;
 import utils.StringUtils;
@@ -42,33 +45,17 @@ public class ScanCommand implements INTCommand, NotificationListener {
     }
 
     private void acquireInputFromUser(Parameters params) {
-        String valueEntered = params.getStringExtra(KeyNames.VALUE_ENTERED_KEY, "");
+        String valueEntered = "";
 
-        boolean success;
+        valueEntered = params.getStringExtra(KeyNames.VALUE_ENTERED_KEY, "");
+        //TODO Change to IDE Front-End
 
-        if(this.array == null) {
-            TripleJValue tripleJValue = TripleJValueSearcher.searchBaracoValue(identifier);
-            //insert if array here
-            try {
-                tripleJValue.setValue(valueEntered);
-                success = true;
-            } catch (NumberFormatException ex) {
-                success = false;
-                NotificationCenter.getInstance().removeObserver(Notifications.ON_SCAN_DIALOG_DISMISSED, this); //remove observer after using
-                this.execute();
 
-            }
-        }
-        else {
-            handleArrayAssignment(valueEntered);
-            success = true;
-        }
+        TripleJValue tripleJValue = TripleJValueSearcher.searchVariable(identifier);
+        tripleJValue.setValue(valueEntered);
 
-        if(success) {
-            NotificationCenter.getInstance().removeObserver(Notifications.ON_SCAN_DIALOG_DISMISSED, this); //remove observer after using
-            ExecutionManager.getInstance().resumeExecution(); //resume execution of thread
-        }
-
+        NotificationCenter.getInstance().removeObserver(Notifications.ON_SCAN_DIALOG_DISMISSED, this); //remove observer after using
+        ExecutionManager.getInstance().resumeExecution(); //resume execution of thread.
     }
 
     @Override
@@ -76,22 +63,5 @@ public class ScanCommand implements INTCommand, NotificationListener {
         if(notificationString == Notifications.ON_SCAN_DIALOG_DISMISSED) {
             this.acquireInputFromUser(params);
         }
-    }
-
-    private void handleArrayAssignment(String resultString) {
-        TripleJParser.ExpressionContext arrayIndexExprCtx = this.array;
-
-        TripleJValue tripleJValue = VariableSearcher.searchVariable(this.identifier);
-        TripleJArray tripleJArray = (TripleJArray) tripleJValue.getValue();
-
-        EvaluationCommand evaluationCommand = new EvaluationCommand(arrayIndexExprCtx);
-        evaluationCommand.execute();
-
-        //create a new array value to replace value at specified index
-        TripleJValue newArrayValue = new TripleJValue(null, tripleJArray.getPrimitiveType());
-        newArrayValue.setValue(resultString);
-        tripleJArray.updateValueAt(newArrayValue, evaluationCommand.getResult().intValue());
-
-        //Console.log("Index to access: " +evaluationCommand.getResult().intValue()+ " Updated with: " +resultString);
     }
 }

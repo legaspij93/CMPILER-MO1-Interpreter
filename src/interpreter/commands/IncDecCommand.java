@@ -33,7 +33,6 @@ public class IncDecCommand implements INTCommand {
 
         TripleJValue tripleJValue = leftHandMapper.getValue();
 
-        if(!tripleJValue.isFinal())
             this.performOperation(tripleJValue);
     }
 
@@ -67,7 +66,4 @@ public class IncDecCommand implements INTCommand {
         }
     }
 
-    public String getIdentifierString() {
-        return exprCtx.primary().Identifier().getText();
-    }
 }

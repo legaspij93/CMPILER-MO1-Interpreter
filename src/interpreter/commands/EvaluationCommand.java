@@ -2,6 +2,11 @@ package interpreter.commands;
 
 import antlr.TripleJParser;
 import com.udojava.evalex.Expression;
+import grammar.TripleJParser;
+import interpreter.representations.TripleJFunction;
+import interpreter.representations.TripleJValue;
+import interpreter.symboltable.SymbolTableManager;
+import interpreter.symboltable.TripleJScope;
 import interpreter.utils.StringUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -10,123 +15,49 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import interpreter.utils.StringUtils;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class EvaluationCommand implements INTCommand, ParseTreeListener {
     private TripleJParser.ConditionalExpressionContext expressionContext;
-    private String newExp;
-    private BigDecimal resValue;
-    private String result = "";
-
-    private Boolean isNumeric;
-    private Boolean hasException = false;
+    private String modifiedExp;
+    private BigDecimal resultValue;
 
     public EvaluationCommand(TripleJParser.ConditionalExpressionContext expCtx){
         this.expressionContext = expCtx;
     }
 
     @Override
-    public void execute(){
-        this.newExp = this.expressionContext.getText();
-
-        ParseTreeWalker treeWalker = new ParseTreeWalker();
-        treeWalker.walk(this,this.expressionContext);
-
-        isNumeric = !this.newExp.contains("\"") && this.newExp.contains("\'");
-
-        if(!isNumeric){
-            if(this.newExp.contains("==") || this.newExp.contains("!=")){
-                String[] strings = {"", ""};
-
-                if(this.newExp.contains("=="))
-                    strings = this.newExp.split("==");
-                if(this.newExp.contains("!="))
-                    strings = this.newExp.split("!=");
-
-                String equal = "STREQ("+strings[0]+", " + strings[1] + ")";
-                if (this.newExp.contains("!="))
-                    equal = "not(" + equal + ")";
-
-                Expression e = new Expression(equal);
-
-                e.addLazyFunction(e.new LazyFunction("STREQ", 2) {
-
-                    private Expression.LazyNumber ZERO = new Expression.LazyNumber() {
-                        @Override
-                        public BigDecimal eval() {
-                            return BigDecimal.ZERO;
-                        }
-
-                        @Override
-                        public String getString() {
-                            return "0";
-                        }
-                    };
-
-                    private Expression.LazyNumber ONE = new Expression.LazyNumber() {
-                        @Override
-                        public BigDecimal eval() {
-                            return BigDecimal.ONE;
-                        }
-
-                        @Override
-                        public String getString() {
-                            return "1";
-                        }
-                    };
-
-                    @Override
-                    public Expression.LazyNumber lazyEval(List<Expression.LazyNumber> lazyList) {
-                        if(lazyList.get(0).getString().equals(lazyList.get(1).getString())){
-                            return ONE;
-                        }
-                        return ZERO;
-                    }
-                });
-
-                this.resValue = e.eval();
-                isNumeric = true;
-                } else if(this.newExp.contains("<=") || this.newExp.contains(">=") || this.newExp.contains("<") || this.newExp.contains(">")){
-                Expression e = new Expression(this.newExp);
-
-                this.resValue = e.eval();
-                isNumeric = true;
-            }
-            else {
-                this.result = StringUtils.removeQuotes(newExp);
-            }
-            } else {
-            if(this.newExp.contains("!")){
-                this.newExp = this.newExp.replaceAll("!", "not");
-                this.newExp = this.newExp.replaceAll("not=", "!=");
-            }
-            if(this.newExp.contains("and")){
-                this.newExp = this.newExp.replaceAll("and", "&&");
-            }
-            if(this.newExp.contains("or")){
-                this.newExp = this.newExp.replaceAll("or", "||");
-            }
-            Expression evalEx = new Expression(this.newExp);
-
-            try{
-                this.resValue = evalEx.eval(false);
-                this.result = this.resValue.toEngineeringString();
-            }catch (Expression.ExpressionException exp){
-
-                this.resValue = new BigDecimal(0);
-                this.result = "";
-                this.hasException = true;
-
-            }catch (ArithmeticException exp){
-                //Add execution Manager here
-
-                this.resValue = new BigDecimal(0);
-                this.result = "";
-                this.hasException = true;
+    public void execute() {
+        this.modifiedExp = this.parentExprCtx.getText();
+        //System.out.println("MODDYY: "+modifiedExp);
+        //catch rules if the value has direct boolean flags
+        /*if(this.modifiedExp.contains(KeywordRecognizer.BOOLEAN_TRUE)) {
+            this.resultValue = new BigDecimal(1);
+        }
+        else if(this.modifiedExp.contains(KeywordRecognizer.BOOLEAN_FALSE)) {
+            this.resultValue = new BigDecimal(0);
+        } */
+        if (this.modifiedExp.contains(KeywordRecognizer.BOOLEAN_TRUE)||this.modifiedExp.contains(KeywordRecognizer.BOOLEAN_FALSE)){
+            try {
+                this.resultValue = new BigDecimal(evaluateBoolean(this.modifiedExp));
+            } catch (ScriptException e) {
+                e.printStackTrace();
             }
         }
+        else {
+            ParseTreeWalker treeWalker = new ParseTreeWalker();
+            treeWalker.walk(this, this.parentExprCtx);
+
+            Expression evalEx = new Expression(this.modifiedExp);
+            //Log.i(TAG,"Modified exp to eval: " +this.modifiedExp);
+            this.resultValue = evalEx.eval();
+        }
+
     }
 
     @Override
@@ -140,14 +71,16 @@ public class EvaluationCommand implements INTCommand, ParseTreeListener {
     }
 
     @Override
-    public void enterEveryRule(ParserRuleContext parserRuleContext){
-        if(parserRuleContext instanceof TripleJParser.ConditionalExpressionContext){
-            TripleJParser.ConditionalExpressionContext condCtx = (TripleJParser.ConditionalExpressionContext) parserRuleContext;
-            if(EvaluationCommand.isFunctionCall(condCtx)){
-                this.evaluateFunctionCall(condCtx);
+    public void enterEveryRule(ParserRuleContext ctx) {
+        if (ctx instanceof TripleJParser.ExpressionContext) {
+            TripleJParser.ExpressionContext exprCtx = (TripleJParser.ExpressionContext) ctx;
+            if (EvaluationCommand.isFunctionCall(exprCtx)) {
+                this.evaluateFunctionCall(exprCtx);
+            } else if(SymbolTableManager.getInstance().getCorgiScope().getFunction(exprCtx.getText()) != null){
+
             }
-            else if(EvaluationCommand.isVariableOrConst(condCtx)){
-                this.evaluateFunctionCall(condCtx);
+            else if (EvaluationCommand.isVariableOrConst(exprCtx)) {
+                this.evaluateVariable(exprCtx);
             }
         }
     }
@@ -157,33 +90,80 @@ public class EvaluationCommand implements INTCommand, ParseTreeListener {
 
     }
 
-    public static boolean isFunctionCall(TripleJParser.ConditionalExpressionContext ctx){
+    public static boolean isFunctionCall(TripleJParser.ExpressionContext exprCtx) {
         Pattern functionPattern = Pattern.compile("([a-zA-Z0-9]+)\\(([ ,.a-zA-Z0-9]*)\\)");
 
-        if(functionPattern.matcher(ctx.getText()).matches())
+        if (exprCtx.expressionList() != null || functionPattern.matcher(exprCtx.getText()).matches()) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
-    public static boolean isVariableOrConst(TripleJParser.ConditionalExpressionContext ctx){
-        //Have to check if valid to just go the first part or needed to be in the most inner level
+    public static boolean isVariableOrConst(TripleJParser.ExpressionContext exprCtx) {
+        if (exprCtx.primary() != null && exprCtx.primary().Identifier() != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-        //placeholder
-        return true;
+    private void evaluateFunctionCall(TripleJParser.ExpressionContext exprCtx) {
+        String functionName = exprCtx.expression(0).getText();
+
+        TripleJScope tripleJScope = SymbolTableManager.getInstance().getTripleJScope();
+        TripleJFunction tripleJFunction = tripleJScope.getFunction(functionName);
+
+        if (exprCtx.expressionList() != null) {
+            List<TripleJParser.ExpressionContext> exprCtxList = exprCtx.expressionList().expression();
+
+            for (int i = 0; i < exprCtxList.size(); i++) {
+                TripleJParser.ExpressionContext parameterExprCtx = exprCtxList.get(i);
+
+                EvaluationCommand evaluationCommand = new EvaluationCommand(parameterExprCtx);
+                evaluationCommand.execute();
+
+                tripleJFunction.mapParameterByValueAt(evaluationCommand.getResult().toEngineeringString(), i);
+            }
+        }
+
+        tripleJFunction.execute();
+
+//        Log.i(TAG, "Before modified EXP function call: " +this.modifiedExp);
+        this.modifiedExp = this.modifiedExp.replace(exprCtx.getText(),
+                tripleJFunction.getReturnValue().getValue().toString());
+//        Log.i(TAG, "After modified EXP function call: " +this.modifiedExp);
 
     }
 
-    private void evaluateFunctionCall(TripleJParser.ConditionalExpressionContext ctx){
-
-    }
-    private void evaluateVariable(TripleJParser.ConditionalExpressionContext ctx){
-
+    private void evaluateVariable(TripleJParser.ExpressionContext exprCtx) {
+        TripleJValue tripleJValue = VariableSearcher
+                .searchVariable(exprCtx.getText());
+        this.modifiedExp = this.modifiedExp.replaceFirst(exprCtx.getText(),
+                tripleJValue.getValue().toString());
     }
 
     public BigDecimal getResult(){return this.resValue;}
-    public String getStringResult(){return result;}
-    public boolean isNumberResult(){return isNumeric;}
-    public boolean hasException(){return hasException;}
 
+    private int evaluateBoolean (String exp) throws ScriptException {
+        String temp = exp;
+        exp.replace("&&", "*");
+        exp.replace("||", "+");
+
+        String stringTemp;
+
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+
+        //System.out.println(engine.eval(exp).toString());
+        stringTemp = engine.eval(exp).toString();
+        // System.out.println(engine.eval(exp));
+
+        if (stringTemp.equals("false"))
+            return 0;
+        else
+            return 1;
+
+
+    }
 }
